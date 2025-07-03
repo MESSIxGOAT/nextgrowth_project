@@ -1,0 +1,37 @@
+<h2>Register</h2>
+
+{% if error %}
+  <p style="color:red;"><strong>Error:</strong> {{ error }}</p>
+{% endif %}
+
+{% if success %}
+  <p style="color:green;"><strong>Success:</strong> {{ success }}</p>
+{% endif %}
+
+<form method="post" action="http://127.0.0.1:8000/api/users/register/" onsubmit="return validateForm();">
+  <input type="text" name="username" placeholder="Username" required><br><br>
+  <input type="email" name="email" placeholder="Email" required><br><br>
+  <input type="password" id="password" name="password" placeholder="Password" required><br><br>
+  <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm Password" required><br><br>
+  <input type="text" name="contact_number" placeholder="Contact Number"><br><br>
+
+  <p>Select Role:</p>
+  <label><input type="radio" name="role" value="User" required> User</label>
+  <label><input type="radio" name="role" value="Admin" required> Admin</label><br><br>
+
+  <button type="submit">Register</button>
+</form>
+
+<script>
+  function validateForm() {
+    const password = document.getElementById("password").value;
+    const confirmPassword = document.getElementById("confirm_password").value;
+
+    if (password !== confirmPassword) {
+      alert("Passwords do not match!");
+      return false;
+    }
+
+    return true;
+  }
+</script>
