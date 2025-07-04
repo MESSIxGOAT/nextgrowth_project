@@ -1,4 +1,5 @@
-from django.shortcuts import render
+from django.contrib import messages
+from django.shortcuts import render,redirect
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import action
 from rest_framework import viewsets, status
@@ -6,6 +7,9 @@ from rest_framework.response import Response
 from myapp.models.CustomUser import CustomUser
 from myapp.serializers.CustomUserSerializer import CustomUserSerializer
 from django.contrib.auth.hashers import make_password
+from django.contrib.auth.hashers import check_password
+
+
 
 class CustomUserViewSet(viewsets.ModelViewSet):
     queryset = CustomUser.objects.all()
@@ -51,3 +55,25 @@ class CustomUserViewSet(viewsets.ModelViewSet):
             })
 
         return render(request, 'register.html')
+    
+    @csrf_exempt
+    @action(detail=False, methods=['get', 'post'], url_path='login')
+    def login(self, request):
+        if request.method == 'POST':
+            username = request.POST.get('username')
+            password = request.POST.get('password')
+
+            try:
+                user = CustomUser.objects.get(username=username)
+                if check_password(password, user.password):
+                    messages.success(request, f"Welcome, {user.username}")
+                    return render(request, 'login.html')  
+                else:
+                    messages.error(request, "Invalid password")
+                    return render(request, 'login.html')
+            except CustomUser.DoesNotExist:
+                messages.error(request, "User not found")
+                return render(request, 'login.html')
+
+        return render(request, 'login.html')
+
